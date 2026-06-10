@@ -271,13 +271,13 @@ RUNES::[256]string{
 String::struct(value:string){}
 
 Empty_String::struct(length:uint){
-   value:(
+   value:String(
       (
-         String("")
+         ""
       )when length==0 else(
-         String("\x00")
+         "\x00"
       )when length==1 else(
-         String(intrinsics.type_field_type(Empty_String(length/2),"value").value+intrinsics.type_field_type(Empty_String((length+1)/2),"value").value)
+         intrinsics.type_field_type(Empty_String(length/2),"value").value+intrinsics.type_field_type(Empty_String((length+1)/2),"value").value
       )
    )
 }
@@ -307,27 +307,27 @@ Brainfuck_State::struct(brainfuck:string,ip:uint,ptr:uint,data:string){}
 BRAINFUCK_DEBUG::false
 
 Brainfuck::struct(brainfuck:string,ip:uint,data:string,ptr:uint,result:string){
-   value:(
+   value:String(
       (
-         String(result)
+         result
       )when ip==len(brainfuck) else(
-         String(intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr+1 when ptr!=len(data)-1 else 0,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value)
+         intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr+1 when ptr!=len(data)-1 else 0,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value
       )when brainfuck[ip]=='>' else(
-         String(intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr-1 when ptr!=0 else len(data)-1,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value)
+         intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr-1 when ptr!=0 else len(data)-1,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value
       )when brainfuck[ip]=='<' else(
-         String(intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data[:ptr]+RUNES[(i16(data[ptr])+1)%%256]+data[ptr+1:],ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value)
+         intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data[:ptr]+RUNES[(i16(data[ptr])+1)%%256]+data[ptr+1:],ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value
       )when brainfuck[ip]=='+' else(
-         String(intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data[:ptr]+RUNES[(i16(data[ptr])-1)%%256]+data[ptr+1:],ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value)
+         intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data[:ptr]+RUNES[(i16(data[ptr])-1)%%256]+data[ptr+1:],ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value
       )when brainfuck[ip]=='-' else(
-         String(/*TODO , idc*/intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value)
+         /*TODO , idc*/intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value
       )when brainfuck[ip]==',' else(
-         String(intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr,(result+RUNES[data[ptr]]) when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value)
+         intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr,(result+RUNES[data[ptr]]) when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value
       )when brainfuck[ip]=='.' else(
-         String(/*ignore [*/intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value)
+         /*ignore [*/intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value
       )when brainfuck[ip]=='[' else(
-         String(intrinsics.type_field_type(Brainfuck(brainfuck,ip+1 when data[ptr]==0 else intrinsics.type_field_type(Backtrack(brainfuck,ip-1,1),"value").value,data,ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value)
+         intrinsics.type_field_type(Brainfuck(brainfuck,ip+1 when data[ptr]==0 else intrinsics.type_field_type(Backtrack(brainfuck,ip-1,1),"value").value,data,ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value
       )when brainfuck[ip]==']' else(
-         String(/*ignore anything else*/intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value)
+         /*ignore anything else*/intrinsics.type_field_type(Brainfuck(brainfuck,ip+1,data,ptr,result when !BRAINFUCK_DEBUG else (result+(intrinsics.type_canonical_name(Brainfuck_State(brainfuck,ip,ptr,data))+"\n"))),"value").value
       )
    )
 }
@@ -366,7 +366,7 @@ brainfuck_as_escaped::#force_inline proc($brainfuck:string,$size:uint)->string{
 }
 
 main::proc(){
-   fmt.printfln(brainfuck("+++++[.-].",1))
+   fmt.printfln("%q",brainfuck("+++++[.-].",1))
    fmt.println(brainfuck_as_escaped("+++++[.-].",1))
    fmt.println(intrinsics.type_field_type(Brainfuck(".>.>..>.>.>.>.>.>.>.>.",0,"Helo World!",0,""),"value").value)
    fmt.println(intrinsics.type_field_type(Escaper("ABCDEFGHIJKLMNOPQRSTUVWXYZ",true),"value").value)
