@@ -26,7 +26,7 @@ Brainfuck_State::struct(brainfuck:string,ip:uint,backtracking:uint,data:string,p
 
 BRAINFUCK_DEBUG::false
 
-BRAINFUCK_GRACE::2
+BRAINFUCK_ITERATIONS_NEEDED::4
 
 Brainfuck_Core::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
    v:/*Brainfuck_State*/(
@@ -34,7 +34,7 @@ Brainfuck_Core::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
          Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,true,s.steps,s.result)
       )when s.ip==len(s.brainfuck) else(
          s
-      )when iterations_left<=4+(1 when BRAINFUCK_DEBUG else 0) else(
+      )when iterations_left<BRAINFUCK_ITERATIONS_NEEDED else(
          (
             (
                comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,0,s.data,s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
@@ -68,22 +68,14 @@ Brainfuck_Core::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
    )
 }
 
-Brainfuck_0::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
-   v:/*Brainfuck_State*/(
-      (
-         s
-      )when iterations_left<=5+(1 when BRAINFUCK_DEBUG else 0)+BRAINFUCK_GRACE else(
-         comp.v(Brainfuck_0(comp.v(Brainfuck_Core(s,iterations_left-1),"v"),iterations_left-1),"v")
-      )
-   )
-}
-
 Brainfuck_1::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
    v:/*Brainfuck_State*/(
       (
          s
-      )when iterations_left<=6+(1 when BRAINFUCK_DEBUG else 0)+BRAINFUCK_GRACE else(
-         comp.v(Brainfuck_1(comp.v(Brainfuck_0(s,iterations_left-1),"v"),iterations_left-1),"v")
+      )when iterations_left<BRAINFUCK_ITERATIONS_NEEDED+1 else(
+         s
+      )when s.finished else(
+         comp.v(Brainfuck_1(comp.v(Brainfuck_Core(s,iterations_left-1),"v"),iterations_left-1),"v")
       )
    )
 }
@@ -92,7 +84,9 @@ Brainfuck_2::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
    v:/*Brainfuck_State*/(
       (
          s
-      )when iterations_left<=7+(1 when BRAINFUCK_DEBUG else 0)+BRAINFUCK_GRACE else(
+      )when iterations_left<BRAINFUCK_ITERATIONS_NEEDED+2 else(
+         s
+      )when s.finished else(
          comp.v(Brainfuck_2(comp.v(Brainfuck_1(s,iterations_left-1),"v"),iterations_left-1),"v")
       )
    )
@@ -102,7 +96,9 @@ Brainfuck_3::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
    v:/*Brainfuck_State*/(
       (
          s
-      )when iterations_left<=8+(1 when BRAINFUCK_DEBUG else 0)+BRAINFUCK_GRACE else(
+      )when iterations_left<BRAINFUCK_ITERATIONS_NEEDED+3 else(
+         s
+      )when s.finished else(
          comp.v(Brainfuck_3(comp.v(Brainfuck_2(s,iterations_left-1),"v"),iterations_left-1),"v")
       )
    )
@@ -112,24 +108,41 @@ Brainfuck_4::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
    v:/*Brainfuck_State*/(
       (
          s
-      )when iterations_left<=9+(1 when BRAINFUCK_DEBUG else 0)+BRAINFUCK_GRACE else(
+      )when iterations_left<BRAINFUCK_ITERATIONS_NEEDED+4 else(
+         s
+      )when s.finished else(
          comp.v(Brainfuck_4(comp.v(Brainfuck_3(s,iterations_left-1),"v"),iterations_left-1),"v")
       )
    )
 }
 
+Brainfuck_5::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
+   v:/*Brainfuck_State*/(
+      (
+         s
+      )when iterations_left<BRAINFUCK_ITERATIONS_NEEDED+5 else(
+         s
+      )when s.finished else(
+         comp.v(Brainfuck_5(comp.v(Brainfuck_4(s,iterations_left-1),"v"),iterations_left-1),"v")
+      )
+   )
+}
+
 brainfuck::#force_inline proc($brainfuck:string,$depth:int)->(_result:string,_escaped:string,_steps:uint,_finished:bool){
-   init_string::comp.v(comp.Buffer_Make(128),"v").v
+   ITERATION_LIMIT::27
+   INIT::Brainfuck_State(brainfuck,0,0,comp.v(comp.Buffer_Make(128),"v").v,0,false,0,"")
    when depth==0{
-      result::comp.v(Brainfuck_Core(Brainfuck_State(brainfuck,0,0,init_string,0,false,0,""),27),"v")
+      result::comp.v(Brainfuck_Core(INIT,ITERATION_LIMIT),"v")
    }else when depth==1{
-      result::comp.v(Brainfuck_1(Brainfuck_State(brainfuck,0,0,init_string,0,false,0,""),27),"v")
+      result::comp.v(Brainfuck_1(INIT,ITERATION_LIMIT),"v")
    }else when depth==2{
-      result::comp.v(Brainfuck_2(Brainfuck_State(brainfuck,0,0,init_string,0,false,0,""),27),"v")
+      result::comp.v(Brainfuck_2(INIT,ITERATION_LIMIT),"v")
    }else when depth==3{
-      result::comp.v(Brainfuck_3(Brainfuck_State(brainfuck,0,0,init_string,0,false,0,""),27),"v")
+      result::comp.v(Brainfuck_3(INIT,ITERATION_LIMIT),"v")
    }else when depth==4{
-      result::comp.v(Brainfuck_4(Brainfuck_State(brainfuck,0,0,init_string,0,false,0,""),27),"v")
+      result::comp.v(Brainfuck_4(INIT,ITERATION_LIMIT),"v")
+   }else when depth==5{
+      result::comp.v(Brainfuck_5(INIT,ITERATION_LIMIT),"v")
    }else{
       #panic("Invalid depth")
    }
@@ -151,11 +164,12 @@ main::proc(){
 
    quine::"-->+++>+>+>+>+++++>++>++>->+++>++>+>>>>>>>>>>>>>>>>->++++>>>>->+++>+++>+++>+++>+++>+++>+>+>>>->->>++++>+>>>>->>++++>+>+>>->->++>++>++>++++>+>++>->++>++++>+>+>++>++>->->++>++>++++>+>+>>>>>->>->>++++>++>++>++++>>>>>->>>>>+++>->++++>->->->+++>>>+>+>+++>+>++++>>+++>->>>>>->>>++++>++>++>+>+++>->++++>>->->+++>+>+++>+>++++>>>+++>->++++>>->->++>++++>++>++++>>++[-[->>+[>]++[<]<]>>+[>]<--[++>++++>]+[<]<<++]>>>[>]++++>++++[--[+>+>++++<<[-->>--<<[->-<[--->>+<<[+>+++<[+>>++<<]]]]]]>+++[>+++++++++++++++<-]>--.<<<]"
 
-   /* at grace=2
-      - 0:    23 steps
-      - 1:  1710 steps
-      - 2:  8265 steps
-      - 3: 30039 steps
+   /*
+      - 0:    24 steps
+      - 1:   276 steps
+      - 2:  2024 steps in  2 seconds
+      - 3: 10626 steps in  2 minutes
+      - 4: 42504 steps in 50 minutes
    */
    DEPTH::2
    SELECTION::3
