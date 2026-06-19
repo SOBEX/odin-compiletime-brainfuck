@@ -28,42 +28,42 @@ BRAINFUCK_DEBUG::false
 
 BRAINFUCK_ITERATIONS_NEEDED::4
 
-Brainfuck_Core::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
+Brainfuck_Core::struct(brainfuck:string,ip:uint,backtracking:uint,data:string,ptr:uint,finished:bool,steps:uint,result:string,iterations_left:uint){
    v:/*Brainfuck_State*/(
       (
-         Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,true,s.steps,s.result)
-      )when s.ip==len(s.brainfuck) else(
-         s
+         Brainfuck_State(brainfuck,ip,backtracking,data,ptr,true,steps,result)
+      )when ip==len(brainfuck) else(
+         Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,result)
       )when iterations_left<BRAINFUCK_ITERATIONS_NEEDED else(
          (
             (
-               comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,0,s.data,s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-            )when s.backtracking==1 else(
-               comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip-1,s.backtracking-1,s.data,s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
+               comp.v(Brainfuck_Core(brainfuck,ip+1,0,data,ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+            )when backtracking==1 else(
+               comp.v(Brainfuck_Core(brainfuck,ip-1,backtracking-1,data,ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
             )
-         )when s.brainfuck[s.ip]=='[' else(
-            comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip-1,s.backtracking+1,s.data,s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-         )when s.brainfuck[s.ip]==']' else(
-            comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip-1,s.backtracking,s.data,s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
+         )when brainfuck[ip]=='[' else(
+            comp.v(Brainfuck_Core(brainfuck,ip-1,backtracking+1,data,ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+         )when brainfuck[ip]==']' else(
+            comp.v(Brainfuck_Core(brainfuck,ip-1,backtracking,data,ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
          )
-      )when s.backtracking>=1 else(
-         comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,s.backtracking,s.data,s.ptr+1 when s.ptr!=len(s.data)-1 else 0,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-      )when s.brainfuck[s.ip]=='>' else(
-         comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,s.backtracking,s.data,s.ptr-1 when s.ptr!=0 else len(s.data)-1,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-      )when s.brainfuck[s.ip]=='<' else(
-         comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,s.backtracking,s.data[:s.ptr]+comp.RUNES[(i16(s.data[s.ptr])+1)%%256]+s.data[s.ptr+1:],s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-      )when s.brainfuck[s.ip]=='+' else(
-         comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,s.backtracking,s.data[:s.ptr]+comp.RUNES[(i16(s.data[s.ptr])-1)%%256]+s.data[s.ptr+1:],s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-      )when s.brainfuck[s.ip]=='-' else(
-         /*TODO , idc*/comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,s.backtracking,s.data,s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-      )when s.brainfuck[s.ip]==',' else(
-         comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,s.backtracking,s.data,s.ptr,s.finished,s.steps+1,(s.result+comp.RUNES[s.data[s.ptr]]) when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-      )when s.brainfuck[s.ip]=='.' else(
-         /*ignore [*/comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,s.backtracking,s.data,s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-      )when s.brainfuck[s.ip]=='[' else(
-         comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip-1 when s.data[s.ptr]!=0 else s.ip+1,1 when s.data[s.ptr]!=0 else s.backtracking,s.data,s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
-      )when s.brainfuck[s.ip]==']' else(
-         /*ignore anything else*/comp.v(Brainfuck_Core(Brainfuck_State(s.brainfuck,s.ip+1,s.backtracking,s.data,s.ptr,s.finished,s.steps+1,s.result when !BRAINFUCK_DEBUG else (s.result+(comp.n(Brainfuck_State(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,""))+"\n"))),iterations_left-1),"v")
+      )when backtracking>=1 else(
+         comp.v(Brainfuck_Core(brainfuck,ip+1,backtracking,data,ptr+1 when ptr!=len(data)-1 else 0,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+      )when brainfuck[ip]=='>' else(
+         comp.v(Brainfuck_Core(brainfuck,ip+1,backtracking,data,ptr-1 when ptr!=0 else len(data)-1,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+      )when brainfuck[ip]=='<' else(
+         comp.v(Brainfuck_Core(brainfuck,ip+1,backtracking,data[:ptr]+comp.RUNES[(i16(data[ptr])+1)%%256]+data[ptr+1:],ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+      )when brainfuck[ip]=='+' else(
+         comp.v(Brainfuck_Core(brainfuck,ip+1,backtracking,data[:ptr]+comp.RUNES[(i16(data[ptr])-1)%%256]+data[ptr+1:],ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+      )when brainfuck[ip]=='-' else(
+         /*TODO , idc*/comp.v(Brainfuck_Core(brainfuck,ip+1,backtracking,data,ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+      )when brainfuck[ip]==',' else(
+         comp.v(Brainfuck_Core(brainfuck,ip+1,backtracking,data,ptr,finished,steps+1,(result+comp.RUNES[data[ptr]]) when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+      )when brainfuck[ip]=='.' else(
+         /*ignore [*/comp.v(Brainfuck_Core(brainfuck,ip+1,backtracking,data,ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+      )when brainfuck[ip]=='[' else(
+         /*TODO backtrack multiple at once?*/comp.v(Brainfuck_Core(brainfuck,ip-1 when data[ptr]!=0 else ip+1,1 when data[ptr]!=0 else backtracking,data,ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
+      )when brainfuck[ip]==']' else(
+         /*ignore anything else*/comp.v(Brainfuck_Core(brainfuck,ip+1,backtracking,data,ptr,finished,steps+1,result when !BRAINFUCK_DEBUG else (result+(comp.n(Brainfuck_State(brainfuck,ip,backtracking,data,ptr,finished,steps,""))+"\n")),iterations_left-1),"v")
       )
    )
 }
@@ -75,7 +75,7 @@ Brainfuck_1::struct(s:/*Brainfuck_State*/typeid,iterations_left:uint){
       )when iterations_left<BRAINFUCK_ITERATIONS_NEEDED+1 else(
          s
       )when s.finished else(
-         comp.v(Brainfuck_1(comp.v(Brainfuck_Core(s,iterations_left-1),"v"),iterations_left-1),"v")
+         comp.v(Brainfuck_1(comp.v(Brainfuck_Core(s.brainfuck,s.ip,s.backtracking,s.data,s.ptr,s.finished,s.steps,s.result,iterations_left-1),"v"),iterations_left-1),"v")
       )
    )
 }
@@ -167,9 +167,9 @@ main::proc(){
    /*
       - 0:    24 steps
       - 1:   276 steps
-      - 2:  2024 steps in  2 seconds
-      - 3: 10626 steps in  2 minutes
-      - 4: 42504 steps in 50 minutes
+      - 2:  2024 steps in  1 second
+      - 3: 10626 steps in  1 minute
+      - 4: 42504 steps in 50 minutes (before core speedup)
    */
    DEPTH::2
    SELECTION::3
