@@ -329,7 +329,7 @@ Assembler_0::struct(brainfuck:string,name:string,loop_stack:string,label_counter
       )when brainfuck[0]=='[' else(
          (
             #panic("loop_stack empty, unbalanced square brackets")
-         )when false&&len(loop_stack)<ASSEMBLER_LABEL_WIDTH else(
+         )when len(loop_stack)<ASSEMBLER_LABEL_WIDTH else(
             comp.v(Assembler_0(brainfuck[1:],name,loop_stack[ASSEMBLER_LABEL_WIDTH:],label_counter,assembly+"\tL_"+name+"_"+loop_stack[:ASSEMBLER_LABEL_WIDTH]+"_check:\n\tcmp byte ptr [rdx], 0\n\tjne L_"+name+"_"+loop_stack[:ASSEMBLER_LABEL_WIDTH]+"_start\n",finished,iterations_left-1),"v")
          )
       )when brainfuck[0]==']' else(
@@ -375,7 +375,7 @@ Assembler_3::struct(s:/*Assembler_State*/typeid,iterations_left:uint){
 }
 
 compile::proc($brainfuck:string,$name:string)->Run{
-   assembly::comp.v(Assembler_3(Assembler_State(brainfuck,name,"",0,"",false),23),"v")
+   assembly::comp.v(Assembler_3(Assembler_State(brainfuck,name,"",0,"",false),22),"v")
    #assert(assembly.finished,"Brainfuck too long, try higher recursion evasion")
    //llvm says its illegal to write to inputs and moving them from `r` to registers also crashes with optimizations so we can just disable them since the asm isnt touched anyway
    @(optimization_mode="none")run:Run:proc"contextless"(tape,output,input:[]u8)->(err:bool){
@@ -467,7 +467,7 @@ main::proc(){
          fmt.printfln("   \"%s\",",prev_line)
       }
 
-      compiletime::comp.v(Assembler_3(Assembler_State(SOURCE,NAME,"",0,"",false),23),"v").assembly
+      compiletime::comp.v(Assembler_3(Assembler_State(SOURCE,NAME,"",0,"",false),22),"v").assembly
       fmt.println(runtime==compiletime)
 
       run:=compile(SOURCE,NAME)
